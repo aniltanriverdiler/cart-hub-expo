@@ -26,7 +26,7 @@ export default function SignInScreen() {
       {/* Sign in Hero Section */}
       <View className="px-6 pt-4">
         <Text className="text-center text-5xl font-extrabold tracking-tight text-primary-foreground uppercase font-mono dark:text-foreground">
-          Grocify
+          CartHub
         </Text>
 
         <Text className="mt-1 text-center text-[14px] text-primary-foreground/80 dark:text-foreground/75">
