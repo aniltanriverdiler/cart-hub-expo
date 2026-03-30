@@ -1,49 +1,42 @@
-import { Show, useClerk, useUser } from "@clerk/expo";
-import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useGroceryStore } from "@/store/grocery-store";
+import { ScrollView, Text, View } from "react-native";
 
-export default function Page() {
-  const { user } = useUser();
-  const { signOut } = useClerk();
+import CompletedItems from "@/components/list/CompletedItems";
+import ListHeroCard from "@/components/list/ListHeroCard";
+import PendingItemCard from "@/components/list/PendingItemCard";
+import TabScreenBackground from "@/components/TabScreenBackground";
+
+const ListScreen = () => {
+  const { items } = useGroceryStore();
+
+  const pendingItems = items.filter((item) => !item.purchased);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome!</Text>
-      <Show when="signed-out">
-        <Link href="/(auth)/sign-in">
-          <Text>Sign in</Text>
-        </Link>
-      </Show>
-      <Show when="signed-in">
-        <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-        <Pressable style={styles.button} onPress={() => signOut()}>
-          <Text style={styles.buttonText}>Sign out</Text>
-        </Pressable>
-      </Show>
-    </View>
-  );
-}
+    <ScrollView
+      className="flex-1 bg-background py-4"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ padding: 20, gap: 14 }}
+    >
+      <TabScreenBackground />
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    paddingTop: 60,
-    gap: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  button: {
-    backgroundColor: "#0a7ea4",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-  },
-});
+      <ListHeroCard />
+
+      <View className="flex-row items-center justify-between px-1">
+        <Text className="text-sm font-semibold uppercase tracking-[1px] text-muted-foreground">
+          Shopping items
+        </Text>
+        <Text className="text-sm text-muted-foreground">
+          {pendingItems.length} active
+        </Text>
+      </View>
+
+      {pendingItems.map((item) => (
+        <PendingItemCard key={item.id} item={item} />
+      ))}
+
+      <CompletedItems />
+    </ScrollView>
+  );
+};
+
+export default ListScreen;
