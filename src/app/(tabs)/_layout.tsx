@@ -8,15 +8,15 @@ import { useEffect } from "react";
 export default function TabsLayout() {
   const { isSignedIn, isLoaded } = useAuth();
 
-  const { loadItems, items } = useGroceryStore();
+  const loadItems = useGroceryStore((s) => s.loadItems);
 
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const tabTintColor = isDark ? "hsl(142 70% 54%)" : "hsl(147 75% 33%)";
 
   useEffect(() => {
-    loadItems();
-  }, []);
+    void loadItems();
+  }, [loadItems]);
 
   if (!isLoaded) {
     return null;

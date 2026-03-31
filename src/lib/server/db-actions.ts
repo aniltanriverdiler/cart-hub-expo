@@ -31,6 +31,9 @@ export const createGroceryItem = async (input: {
       updated_at: Date.now(),
     })
     .returning();
+
+  if (!rows.length) return null;
+  return rows[0];
 };
 
 // Set a grocery item as purchased

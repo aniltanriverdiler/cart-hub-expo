@@ -1,56 +1,136 @@
-# Welcome to your Expo app 👋
+# CartHub
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Plan smarter. Shop happier.**
 
-## Get started
+CartHub is a cross-platform grocery planning app built with [Expo](https://expo.dev/) and [React Native](https://reactnative.dev/). Sign in with your preferred provider, manage your list, plan items, and see insights—all in one place.
 
-1. Install dependencies
+![CartHub login screen preview](assets/images/carthub-login.png)
+
+## Repository
+
+**GitHub:** [https://github.com/aniltanriverdiler/cart-hub-expo](https://github.com/aniltanriverdiler/cart-hub-expo.git)
+
+```bash
+git clone https://github.com/aniltanriverdiler/cart-hub-expo.git
+cd cart-hub-expo
+```
+
+## Features
+
+- **Authentication** — [Clerk](https://clerk.com/) with social sign-in (Google, GitHub, Apple) and an onboarding-style welcome screen.
+- **Grocery list** — Browse and update items synced via server API routes.
+- **Planner** — Add and organize grocery items with categories and priorities.
+- **Insights** — Summary views for stats, categories, and priorities; optional feedback integration with [Sentry](https://sentry.io/).
+- **Data layer** — [Neon](https://neon.tech/) Postgres with [Drizzle ORM](https://orm.drizzle.team/); seed script for sample data.
+
+## Tech stack
+
+| Area | Choices |
+|------|---------|
+| App | Expo ~55, React 19, React Native, [Expo Router](https://docs.expo.dev/router/introduction/) (file-based routing) |
+| Styling | [NativeWind](https://www.nativewind.dev/) (Tailwind for React Native) |
+| Auth | `@clerk/expo` |
+| Database | Drizzle ORM + `@neondatabase/serverless` |
+| Monitoring | `@sentry/react-native` (optional, via env) |
+| State | Zustand (client store for grocery data) |
+
+## Project structure (high level)
+
+```
+cart-hub-expo/
+├── src/
+│   ├── app/                 # Expo Router: layouts, tabs, auth, API routes
+│   │   ├── (auth)/          # Sign-in flow
+│   │   ├── (tabs)/          # List, Planner, Insights
+│   │   └── api/             # Server routes for grocery items
+│   ├── components/          # UI (e.g. planner, insights)
+│   ├── hooks/
+│   ├── lib/server/          # DB client, Drizzle schema, server actions
+│   └── store/
+├── assets/images/           # Icons, splash, auth art, login preview
+├── scripts/                 # e.g. seed-grocery.cjs
+├── drizzle.config.ts
+├── app.json
+└── package.json
+```
+
+## Prerequisites
+
+- **Node.js** 18+ (recommended)
+- A **Clerk** application with Expo configured (publishable key).
+- A **Neon** (or compatible) Postgres URL for API routes that use the database.
+- For native builds: Xcode (iOS) and/or Android Studio (Android), or use Expo’s cloud/prebuild workflow as documented by Expo.
+
+## Environment variables
+
+Create a `.env.local` (or configure your host) with at least:
+
+| Variable | Purpose |
+|----------|---------|
+| `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key for the app |
+| `DATABASE_URL` | Postgres connection string for Drizzle / API routes |
+| `EXPO_PUBLIC_SENTRY_DSN` | *(Optional)* Sentry DSN for error reporting |
+
+Never commit real secrets. Use your team’s secret management in CI and production.
+
+## Setup
+
+1. **Install dependencies** (the repo includes a `bun.lock`; use npm, Bun, yarn, or pnpm):
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Configure environment** — add the variables above so Clerk and the database work locally.
+
+3. **Database** — push schema with Drizzle when your `DATABASE_URL` is set:
 
    ```bash
-   npx expo start
+   npm run db:push
    ```
 
-In the output, you'll find options to open the app in a
+4. **Seed sample groceries** *(optional)*:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   npm run seed:grocery
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+5. **Start the dev server**:
 
-## Get a fresh project
+   ```bash
+   npm start
+   ```
 
-When you're ready, run:
+   Then open the app in an iOS simulator, Android emulator, or web as prompted by the Expo CLI.
 
-```bash
-npm run reset-project
-```
+### Scripts
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+| Command | Description |
+|---------|-------------|
+| `npm start` | Start Expo dev server |
+| `npm run ios` / `npm run android` | Run native builds (requires dev environment) |
+| `npm run web` | Start with web target |
+| `npm run lint` | Run Expo lint |
+| `npm run db:push` | Push Drizzle schema to the database |
+| `npm run seed:grocery` | Seed grocery sample data |
 
-### Other setup steps
+## Development notes
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- **Routing** — Auth vs. main app is handled in layouts; signed-out users are redirected to sign-in.
+- **API** — Grocery operations go through `src/app/api/` routes backed by Drizzle and Neon.
+- **Typed routes** — Expo Router typed routes are enabled in `app.json` experiments.
 
-## Learn more
+## Contributing
 
-To learn more about developing your project with Expo, look at the following resources:
+Fork the repository, create a branch for your change, and open a pull request with a short description of what you changed and why.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## License
 
-## Join the community
+This project does not include a default license file in the repository. Add a `LICENSE` if you intend to distribute or open-source the code under specific terms.
 
-Join our community of developers creating universal apps.
+## Resources
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo documentation](https://docs.expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Clerk Expo](https://clerk.com/docs/quickstarts/expo)
+- [Drizzle ORM](https://orm.drizzle.team/docs/overview)
